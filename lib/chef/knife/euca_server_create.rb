@@ -166,11 +166,7 @@ class Chef
         }
 
         if Chef::Config[:knife][:euca_user_data]
-           begin
               server_def.merge!(:user_data => File.read(Chef::Config[:knife][:euca_user_data]))
-           rescue
-              ui.warn("Cannot read #{Chef::Config[:knife][:euca_user_data]}: #{$!.inspect}. Ignoring option.")
-           end
         end
 
         server = connection.servers.create(server_def)
