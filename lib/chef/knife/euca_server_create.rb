@@ -144,6 +144,9 @@ class Chef
       rescue Errno::EHOSTUNREACH
         sleep 2
         false
+      rescue Errno::ENETUNREACH
+        sleep 2
+        false
       ensure
         tcp_socket && tcp_socket.close
       end
@@ -171,7 +174,13 @@ class Chef
         print "\n#{ui.color("Waiting for server", :magenta)}"
 
         # wait for it to be ready to do stuff
-        server.wait_for { print "."; ready? }
+        begin
+          server.wait_for { print "."; ready? }
+        rescue Excon::Errors::Forbidden => e
+          print "x"
+          sleep 1
+          retry
+        end
 
         puts("\n")
 
